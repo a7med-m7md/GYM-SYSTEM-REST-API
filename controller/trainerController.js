@@ -108,3 +108,54 @@ exports.logOut = (req, res) => {
         status: 'success'
     })
 }
+
+// GET ALL MY TRAINEEEEEEEEEEEEE
+exports.getAllMyUsers = async (req, res, next) => {
+    console.log(req.body)
+    const users = await info.findAll({ where: { trainerId: req.body.trainer.id } });
+    res.status(200).json({
+        status: "success",
+        result: users.length,
+        users
+    })
+}
+
+
+exports.editCurrentClient = async (req, res, next) => {
+    try {
+        const { id } = req.params
+        const user = await info.findOne({ where: { id } })
+        if (user.trainerId != req.body.trainer.id) {
+            return res.status(401).json({
+                status: "you can't do this operation",
+                message: "This trainee isn't with you"
+            })
+        }
+        user.calories = req.body.calories
+        user.dietPlan = req.body.dietPlan
+        user.trainingPlan = req.body.trainingPlan
+        user.progress = req.body.progress
+        await user.save()
+
+        res.status(200).json({
+            status: "updated successfully",
+            user
+        })
+    } catch (err) {
+        return res.status(500).json({
+            status: "Failed",
+            message: "You can't do this operation"
+        })
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
