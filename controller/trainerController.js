@@ -1,7 +1,7 @@
 const trainer = require('../model/trainer')
 const trainerInfo = require('../model/trainerInfo')
 const jwt = require('jsonwebtoken')
-const { promisify, inherits } = require('util')
+const { promisify } = require('util')
 const info = require('../model/info')
 
 const signToken = (email) => {
@@ -131,7 +131,7 @@ exports.editCurrentClient = async (req, res, next) => {
                 message: "This trainee isn't with you"
             })
         }
-        user.calories = req.body.calories
+        // user.calories = req.body.calories
         user.dietPlan = req.body.dietPlan
         user.trainingPlan = req.body.trainingPlan
         user.progress = req.body.progress
@@ -151,7 +151,42 @@ exports.editCurrentClient = async (req, res, next) => {
 }
 
 
+exports.getAllTrainers = async (req, res, next) => {
+    const trainers = await trainer.findAll();
+    res.status(200).json({
+        status: "success",
+        result: trainers.length,
+        trainers
+    })
+}
 
+exports.getInfo = async (req, res, next) => {
+    try {
+        const { id } = req.params
+        const myinfo = await info.findOne({ where: { id } })
+        if (myinfo.trainerId != req.body.trainer.id) {
+            return res.status(401).json({
+                status: "you can't do this operation",
+                message: "This trainee isn't with you"
+            })
+        }
+        res.status(200).json({
+            status: "success",
+            info: {
+                dietPlan: myinfo.dietPlan,
+                trainingPlan: myinfo.trainingPlan,
+                progress: myinfo.progress,
+            }
+        })
+    }
+    catch (err) {
+        res.status(500).json({
+            status: "Falied",
+            message: "Can't do this operation on this client!"
+        })
+    }
+
+}
 
 
 
