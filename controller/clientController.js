@@ -61,7 +61,7 @@ exports.login = async (req, res) => {
     const password = req.body.password
     try {
         const user = await client.findAll({ where: { email }, raw: true })
-        if (!user || !user[0].password) {
+        if (!user || user[0].password != password) {
             return res.status(401).json({
                 status: 'falied',
                 message: 'The password or the email is incorrect'

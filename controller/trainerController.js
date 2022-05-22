@@ -10,18 +10,27 @@ const signToken = (email) => {
 }
 
 const createToken = (res, statusCode, trainer_) => {
-    const token = signToken(trainer_.email)
-    const cookieOptions = {
-        expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 100),
-        httpOnly: true,
+    try {
+        const token = signToken(trainer_.email)
+        const cookieOptions = {
+            expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 100),
+            httpOnly: true,
+        }
+        res.cookie('jwt', token, cookieOptions)
+        trainer_.password = undefined
+        res.status(statusCode).json({
+            status: 'success',
+            trainer: trainer_,
+            token
+        })
+    } catch (err) {
+        res.status(500).json({
+            status: 'Failed',
+            message: 'Something went wrong!!'
+
+        })
     }
-    res.cookie('jwt', token, cookieOptions)
-    trainer_.password = undefined
-    res.status(statusCode).json({
-        status: 'success',
-        trainer: trainer_,
-        token
-    })
+
 }
 
 exports.getMe = async (req, res, next) => {
@@ -113,15 +122,23 @@ exports.logOut = (req, res) => {
 // GET ALL MY TRAINEEEEEEEEEEEEE
 exports.getAllMyUsers = async (req, res, next) => {
     console.log(req.body)
-    const users = await client.findAll({
+    try {
+        const users = await client.findAll({
 
-        include: [{ model: info, where: { trainerId: req.body.trainer.id }, }]
-    });
-    res.status(200).json({
-        status: "success",
-        result: users.length,
-        users
-    })
+            include: [{ model: info, where: { trainerId: req.body.trainer.id }, }]
+        });
+        res.status(200).json({
+            status: "success",
+            result: users.length,
+            users
+        })
+    }
+    catch (err) {
+        res.status(500).json({
+            status: "Failed",
+            message: "Can't get users"
+        })
+    }
 }
 
 
