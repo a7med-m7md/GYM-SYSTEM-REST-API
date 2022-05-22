@@ -3,6 +3,7 @@ const trainerInfo = require('../model/trainerInfo')
 const jwt = require('jsonwebtoken')
 const { promisify } = require('util')
 const info = require('../model/info')
+const client = require('../model/client')
 
 const signToken = (email) => {
     return jwt.sign({ email }, "gymsystem", { expiresIn: "5d" })
@@ -112,7 +113,10 @@ exports.logOut = (req, res) => {
 // GET ALL MY TRAINEEEEEEEEEEEEE
 exports.getAllMyUsers = async (req, res, next) => {
     console.log(req.body)
-    const users = await info.findAll({ where: { trainerId: req.body.trainer.id } });
+    const users = await client.findAll({
+
+        include: [{ model: info, where: { trainerId: req.body.trainer.id }, }]
+    });
     res.status(200).json({
         status: "success",
         result: users.length,
@@ -164,6 +168,7 @@ exports.getInfo = async (req, res, next) => {
     try {
         const { id } = req.params
         const myinfo = await info.findOne({ where: { id } })
+        const user = await client.findOne({ where: { id: myinfo.clientId } })
         if (myinfo.trainerId != req.body.trainer.id) {
             return res.status(401).json({
                 status: "you can't do this operation",
@@ -173,6 +178,8 @@ exports.getInfo = async (req, res, next) => {
         res.status(200).json({
             status: "success",
             info: {
+                name: user.firstName + " " + user.lastName,
+                email: user.email,
                 dietPlan: myinfo.dietPlan,
                 trainingPlan: myinfo.trainingPlan,
                 progress: myinfo.progress,
@@ -187,10 +194,3 @@ exports.getInfo = async (req, res, next) => {
     }
 
 }
-
-
-
-
-
-
-

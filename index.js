@@ -28,6 +28,7 @@ app.use(bodyParser.json())
 app.use(cookieParser())
 
 
+
 clients.hasOne(infos)
 
 infos.belongsTo(sports)

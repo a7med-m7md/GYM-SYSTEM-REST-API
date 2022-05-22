@@ -11,6 +11,7 @@ exports.getMySports = async (req, res, next) => {
             include: [{ model: excercise, attributes: ['name'] }],
             attributes: ['name']
         })
+
         res.status(200).json({
             status: 'success',
             sports,

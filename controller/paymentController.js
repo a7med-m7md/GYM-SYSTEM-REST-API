@@ -16,7 +16,6 @@ exports.pay = async (req, res, next) => {
 
     const amount = validCode(code)
     try {
-
         var mymembership = await membership.findOne({ where: { clientId: req.body.user.id } })
         if (!mymembership)
             mymembership = await membership.create({
