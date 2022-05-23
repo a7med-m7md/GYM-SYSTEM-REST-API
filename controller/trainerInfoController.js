@@ -2,7 +2,7 @@ const trainerInfo = require('../model/trainerInfo')
 
 exports.getMyInfo = async (req, res, next) => {
     try {
-        const infos = await trainerInfo.findOne({ raw: true })
+        const infos = await trainerInfo.findOne({ where: { clientId: req.body.trainer.id } }, { raw: true })
         res.status(200).json({
             status: 'success',
             infos
@@ -11,6 +11,7 @@ exports.getMyInfo = async (req, res, next) => {
     catch (err) {
         console.log(err)
     }
+    next()
 }
 
 

@@ -35,23 +35,22 @@ const createToken = (res, statusCode, trainer_) => {
 
 exports.getMe = async (req, res, next) => {
     try {
-        const trainer_ = await trainer.findOne({
+        const trainer_ = await trainer.findAll({
             where: { email: req.body.trainer.email },
             include: [{ model: trainerInfo, attributes: { exclude: ['trainerId', 'id'] } }],
             attributes: { exclude: ['password',] }, raw: true
         })
-        res.status(200).json({
+        return res.status(200).json({
             status: 'success',
-            trainer: trainer_,
+            trainer: trainer_[0],
         })
     }
     catch (err) {
-        res.status(500).json({
-            status: 'Failed',
-            message: "can't show you this data",
+        return res.status(500).json({
+            status: "Failed",
+            message: "Can't access"
         })
     }
-    next()
 }
 
 exports.getAllClients = async (req, res, next) => {
